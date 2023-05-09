@@ -2,12 +2,13 @@ package controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GeneticAlgorithm {
 
 	private List<Controller> population = new ArrayList<>();
 	
-	/*public class NaturalSelection {
+	public static class NaturalSelection {
 
 		public static final int POPULATION_SIZE = 100;
 		public static final int MAX_GENERATIONS = 1000;
@@ -19,7 +20,7 @@ public class GeneticAlgorithm {
 		public NaturalSelection() {
 
 			// Initialization
-			population = generate();
+			this.population = generate();
 
 			int numOfGens = 0;
 			while (numOfGens < MAX_GENERATIONS) {
@@ -52,7 +53,7 @@ public class GeneticAlgorithm {
 			return population;
 		}
 
-		public static int getRandom(int bound) { // WORKING
+		public int getRandom(int bound) { // WORKING
 			return new Random().nextInt(bound);
 		}
 
@@ -84,7 +85,7 @@ public class GeneticAlgorithm {
 		public Individual checkSolution() {
 
 			for (Individual i : population)
-				if (i.calculateFitness() == Individual.MAX_FITNESS)
+				if (i.calculateFitness() == Individual.getMax_fitness())
 					return i;
 			return null;
 		}
@@ -102,5 +103,5 @@ public class GeneticAlgorithm {
 //			Individual i = new Individual(a);
 //			System.out.println(i.calculateFitness());
 		}
-	}*/
+	}
 }
