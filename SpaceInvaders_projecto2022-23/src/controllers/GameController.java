@@ -12,5 +12,4 @@ public interface GameController {
 	 * specific game being played.
 	 */
 	public double[] nextMove(double[] currentState);
-	//adiosjadoi
 }
