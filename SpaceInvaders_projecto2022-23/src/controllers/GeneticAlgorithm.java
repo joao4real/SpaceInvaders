@@ -14,7 +14,7 @@ public class GeneticAlgorithm {
 	private static final int POPULATION_SIZE = 100;
 	private static final int MAX_GENERATIONS = 1000;
 	private static final double MUTATION_ODD = 0.2;
-	private static final double SELECTION_RATIO = 0.2;
+	private static final double SELECTION_RATIO = 0.05;
 	
 	public GeneticAlgorithm() {
 
@@ -38,18 +38,18 @@ public class GeneticAlgorithm {
 			}
 		}
 
-		public List<Board> generate() { // WORKING
+		public List<Board> generate() {
 			List<Board> population = new ArrayList<>();
 			for (int i = 0; i < POPULATION_SIZE; i++)
 				population.add(new Board(new Controller(new NeuralNetwork())));
 			return population;
 		}
 
-		public int getRandom(int bound) { // WORKING
+		public int getRandom(int bound) {
 			return new Random().nextInt(bound);
 		}
 
-		public void selection() { // WORKING
+		public void selection() { 
 			while (population.size() > SELECTION_RATIO * POPULATION_SIZE) {
 				int a = getRandom(population.size());
 				int b = getRandom(population.size());
@@ -67,16 +67,17 @@ public class GeneticAlgorithm {
 			while (list.size() < POPULATION_SIZE) {
 				int a = getRandom(population.size());
 				int b = getRandom(population.size());
-				list.add(childrenOf(population.get(a), population.get(b)));
+//				list.add(crossover(population.get(a), population.get(b)));
 			}
 			population = list;
 		}
 
-		private Board childrenOf(Board b1, Board b2) {
-			return null; //TODO 
+	/*	private Board crossover(Board b1, Board b2) {
+			Random r = new Random();
+			
 		}
 
-		/*public void attemptMutation() {
+		public void attemptMutation() {
 			for (Board b : population) 
 				if (Math.random() <= MUTATION_ODD) 
 					i.getArrayOfElements()[getRandom(Individual.SIZE)] = getRandom(Individual.SIZE);

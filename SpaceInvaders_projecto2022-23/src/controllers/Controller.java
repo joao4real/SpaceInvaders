@@ -18,36 +18,28 @@ public class Controller implements GameController {
 
 	@Override
 	public double[] nextMove(double[] currentState) {
-		return nn.forward(currentState);
+//		return nn.forward(currentState);
+		return null;
 	}
 
 	public NeuralNetwork getNeuralNetwork() {
 		return nn;
 	}
 
-	public static class NeuralNetwork {
+	protected static class NeuralNetwork {
 
 		private static final int HIDDEN_LAYER_SIZE = 100;
-		private double[][] inputWeights;
-		private double[] hiddenBiases;
-		private double[][] outputWeights;
-		private double[] outputBiases;
-
-		NeuralNetwork() {
+		private double[] array;
+		
+		protected NeuralNetwork() {
 			createNewNeuralNetwork();
 		}
 
 		private void createNewNeuralNetwork() {
-
-			hiddenBiases = new double[HIDDEN_LAYER_SIZE];
-			inputWeights = new double[Commons.STATE_SIZE][HIDDEN_LAYER_SIZE];
-			outputWeights = new double[HIDDEN_LAYER_SIZE][Commons.NUM_ACTIONS];
-			outputBiases = new double[Commons.NUM_ACTIONS];
-
-			generateMatrix(inputWeights);
-			generateMatrix(outputWeights);
-			generateArray(hiddenBiases);
-			generateArray(outputBiases);
+			
+			array = new double[HIDDEN_LAYER_SIZE + Commons.STATE_SIZE*HIDDEN_LAYER_SIZE + Commons.NUM_ACTIONS + HIDDEN_LAYER_SIZE*Commons.NUM_ACTIONS];
+			
+			generateArray(array);
 		}
 
 		private void generateMatrix(double[][] matrix) {
@@ -61,7 +53,7 @@ public class Controller implements GameController {
 				array[i] = Math.random() * 20 - 10; // valores entre -10 e 10
 		}
 
-		private double[] calculate(double[] firstValues, double[][] weights, double[] biases, boolean sigmoid) {
+		/*private double[] calculate(double[] firstValues, double[][] weights, double[] biases, boolean sigmoid) {
 
 			double[] result = new double[biases.length];
 
@@ -77,5 +69,9 @@ public class Controller implements GameController {
 		private double[] forward(double[] firstValues) {
 			return calculate(calculate(firstValues, inputWeights, hiddenBiases, false), outputWeights, outputBiases, false);
 		}
+	}
+		
+		private double[] forward() {
+			*/
 	}
 }
