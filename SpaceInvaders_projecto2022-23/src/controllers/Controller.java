@@ -1,6 +1,4 @@
 package controllers;
-
-import space.Board;
 import space.Commons;
 import space.SpaceInvaders;
 
@@ -15,7 +13,7 @@ public class Controller implements GameController {
 	public static void main(String[] args) {
 		GameController g = new Controller(new NeuralNetwork());
 		SpaceInvaders.showControllerPlaying(g, 5);
-	}
+		}
 
 	@Override
 	public double[] nextMove(double[] currentState) {
@@ -24,6 +22,11 @@ public class Controller implements GameController {
 		return x;
 	}
 
+	@Override
+	public void giveFitnessValue(double fitness) {
+		nn.fitness = fitness;
+	}
+	
 	public NeuralNetwork getNeuralNetwork() {
 		return nn;
 	}
@@ -32,58 +35,46 @@ public class Controller implements GameController {
 
 		private static final int HIDDEN_LAYER_SIZE = 100;
 		private double[] array;
+		private double fitness;
 		
 		protected NeuralNetwork() {
 			createNewNeuralNetwork();
 		}
 
 		private void createNewNeuralNetwork() {
-			
-			array = new double[HIDDEN_LAYER_SIZE + Commons.STATE_SIZE*HIDDEN_LAYER_SIZE + Commons.NUM_ACTIONS + HIDDEN_LAYER_SIZE*Commons.NUM_ACTIONS];
-			
+			array = new double[ Commons.STATE_SIZE*HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE*Commons.NUM_ACTIONS + Commons.NUM_ACTIONS];
 			generateArray(array);
-		}
-
-		private void generateMatrix(double[][] matrix) {
-			for (int j = 0; j < matrix.length; j++)
-				for (int i = 0; i < matrix[0].length; i++)
-					matrix[j][i] = Math.random() * 20 - 10; // valores entre -10 e 10
 		}
 
 		private void generateArray(double[] array) {
 			for (int i = 0; i < array.length; i++)
-				array[i] = Math.random() * 20 - 10; // valores entre -10 e 10
+				array[i] = Math.random() * 100000; // valores entre 0 e 100000
 		}
 
-		/*private double[] calculate(double[] firstValues, double[][] weights, double[] biases, boolean sigmoid) {
+//		private double[] calculate(double[] array) {
 
-			double[] result = new double[biases.length];
+//			double[] result = new double[biases.length];
 
-			for (int j = 0; j < weights[0].length; j++) {
+			/*for (int j = 0; j < weights[0].length; j++) {
 				double total = 0;
 				for (int i = 0; i < weights.length; i++)
 					total += weights[i][j] * firstValues[i];
-				result[j] = (sigmoid) ? 1 / (1 + Math.exp(-(total + biases[j]))) : total + biases[j];
+				result[j] =  total + biases[j];
 			}
 			return result;
 		}
-
-		private double[] forward(double[] firstValues) {
-			return calculate(calculate(firstValues, inputWeights, hiddenBiases, false), outputWeights, outputBiases, false);
-		}
-	}
-		
-		private double[] forward() {
-		
 			*/
 		
-		public Double getFitness() {
-			Board b = new Board(new Controller(this));
-			return b.getFitness();
-		}
-
+//		private double[] forward(double[] currentState) {
+		
 		public double[] getArray() {
 			return array;
 		}
+
+		public double getFitness() {
+			return fitness;
+		}
 	}
+
+	
 }

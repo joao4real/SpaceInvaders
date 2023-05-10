@@ -193,6 +193,7 @@ public class Board extends JPanel {
 		g.setFont(small);
 		g.drawString(message + "-->" + getFitness(), (Commons.BOARD_WIDTH - fontMetrics.stringWidth(message)) / 2,
 				Commons.BOARD_WIDTH / 2);
+		controller.giveFitnessValue(getFitness());
 	}
 	
 
