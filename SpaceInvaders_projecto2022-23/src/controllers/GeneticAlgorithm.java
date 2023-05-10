@@ -30,13 +30,14 @@ public class GeneticAlgorithm {
 
 			// Cross Over
 			newGeneration();
-
+			
 			// Mutation
 			attemptMutation();
-
+			System.out.println("here");
 			// Generation improvement
 			numOfGens++;
 		}
+		System.out.println(fittestChromossome());
 	}
 
 	public List<NeuralNetwork> generate() {
@@ -94,5 +95,9 @@ public class GeneticAlgorithm {
 		for (int i = 0; i < population.size(); i++)
 			temp = (population.get(i).getFitness() > temp.getFitness()) ? population.get(i) : temp;
 		return temp.getFitness();
+	}
+
+	public List<NeuralNetwork> getPopulation() {
+		return population;
 	}
 }

@@ -10,11 +10,6 @@ public class Controller implements GameController {
 		this.nn = nn;
 	}
 
-	public static void main(String[] args) {
-		GameController g = new Controller(new NeuralNetwork());
-		SpaceInvaders.showControllerPlaying(g, 5);
-		}
-
 	@Override
 	public double[] nextMove(double[] currentState) {
 		//return nn.forward(currentState);	
