@@ -3,38 +3,37 @@ package controllers;
 import space.Commons;
 import space.SpaceInvaders;
 
-public class Controller implements GameController{
+public class Controller implements GameController {
 
 	private NeuralNetwork nn;
-	
+
 	public Controller(NeuralNetwork nn) {
 		this.nn = nn;
 	}
 
 	public static void main(String[] args) {
-		GameController c = new Controller(new NeuralNetwork());
-		SpaceInvaders.showControllerPlaying(c,5);
-	}
-	
-	@Override
-	public double[] nextMove(double[] currentState) {
-		return nn.calculate(nn.calculate(currentState, nn.inputWeights, nn.hiddenBiases, false), nn.outputWeights, nn.outputBiases, false);
+		GameController g = new Controller(new NeuralNetwork());
+		SpaceInvaders.showControllerPlaying(g, 5);
 	}
 
-	
+	@Override
+	public double[] nextMove(double[] currentState) {
+		return nn.forward(currentState);
+	}
+
 	public NeuralNetwork getNeuralNetwork() {
 		return nn;
 	}
 
-	private static class NeuralNetwork {
-		
+	public static class NeuralNetwork {
+
 		private static final int HIDDEN_LAYER_SIZE = 100;
 		private double[][] inputWeights;
 		private double[] hiddenBiases;
 		private double[][] outputWeights;
 		private double[] outputBiases;
 
-		private NeuralNetwork() {
+		NeuralNetwork() {
 			createNewNeuralNetwork();
 		}
 
@@ -50,16 +49,16 @@ public class Controller implements GameController{
 			generateArray(hiddenBiases);
 			generateArray(outputBiases);
 		}
-		
+
 		private void generateMatrix(double[][] matrix) {
 			for (int j = 0; j < matrix.length; j++)
 				for (int i = 0; i < matrix[0].length; i++)
-					matrix[j][i] = Math.random()*20 - 10; // valores entre -10 e 10
+					matrix[j][i] = Math.random() * 20 - 10; // valores entre -10 e 10
 		}
 
 		private void generateArray(double[] array) {
-			for (int i = 0; i < array.length; i++) 
-				array[i] = Math.random()*20 - 10; // valores entre -10 e 10
+			for (int i = 0; i < array.length; i++)
+				array[i] = Math.random() * 20 - 10; // valores entre -10 e 10
 		}
 
 		private double[] calculate(double[] firstValues, double[][] weights, double[] biases, boolean sigmoid) {
@@ -74,7 +73,9 @@ public class Controller implements GameController{
 			}
 			return result;
 		}
+
+		private double[] forward(double[] firstValues) {
+			return calculate(calculate(firstValues, inputWeights, hiddenBiases, false), outputWeights, outputBiases, false);
+		}
 	}
-
 }
-

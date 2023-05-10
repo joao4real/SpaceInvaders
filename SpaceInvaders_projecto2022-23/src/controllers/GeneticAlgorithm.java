@@ -4,25 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import controllers.Controller.NeuralNetwork;
+import space.Board;
+
 public class GeneticAlgorithm {
 
-	private List<Controller> population = new ArrayList<>();
+	private List<Board> population = new ArrayList<>();
 	
-	public static class NaturalSelection {
-
-		public static final int POPULATION_SIZE = 100;
-		public static final int MAX_GENERATIONS = 1000;
-		public static final double MUTATION_ODD = 0.2;
-		public static final double SELECTION_RATIO = 0.2;
-
-		private List<Individual> population = new ArrayList<>();
-
-		public NaturalSelection() {
+	private static final int POPULATION_SIZE = 100;
+	private static final int MAX_GENERATIONS = 1000;
+	private static final double MUTATION_ODD = 0.2;
+	private static final double SELECTION_RATIO = 0.2;
+	
+	public GeneticAlgorithm() {
 
 			// Initialization
-			this.population = generate();
+			population = generate();
 
-			int numOfGens = 0;
+			int numOfGens = 1;
 			while (numOfGens < MAX_GENERATIONS) {
 
 				// Selection
@@ -32,24 +31,17 @@ public class GeneticAlgorithm {
 				newGeneration();
 
 				// Mutation
-				attemptMutation();
+				//attemptMutation();
 
-				// Termination
-				Individual i = checkSolution();
-				if (i != null) {
-					System.out.println("BEST SOLUTION FOUNDED:\n\n" + i + "\n\nTOTAL OF GENERATIONS:\n\n" + numOfGens);
-					return;
-				}
+				// Repeat through generations
 				numOfGens++;
 			}
-			System.out.println("BEST SOLUTION NOT FOUNDED...\n" + "TOTAL OF GENERATIONS: " + numOfGens);
-
 		}
 
-		public List<Individual> generate() { // WORKING
-			List<Individual> population = new ArrayList<>();
+		public List<Board> generate() { // WORKING
+			List<Board> population = new ArrayList<>();
 			for (int i = 0; i < POPULATION_SIZE; i++)
-				population.add(new Individual());
+				population.add(new Board(new Controller(new NeuralNetwork())));
 			return population;
 		}
 
@@ -61,23 +53,31 @@ public class GeneticAlgorithm {
 			while (population.size() > SELECTION_RATIO * POPULATION_SIZE) {
 				int a = getRandom(population.size());
 				int b = getRandom(population.size());
-				population.remove(Individual.lowerFitness(population.get(a), population.get(b)));
+				population.remove(lowerFitness(population.get(a), population.get(b)));
 			}
+		}
+
+		public Board lowerFitness(Board b1, Board b2) {
+			return (b1.getFitness() < b2.getFitness()) ?  b1 : b2;
 		}
 
 		public void newGeneration() {
 
-			List<Individual> list = new ArrayList<>();
+			List<Board> list = new ArrayList<>();
 			while (list.size() < POPULATION_SIZE) {
 				int a = getRandom(population.size());
 				int b = getRandom(population.size());
-				list.add(Individual.childrenOf(population.get(a), population.get(b)));
+				list.add(childrenOf(population.get(a), population.get(b)));
 			}
 			population = list;
 		}
 
-		public void attemptMutation() {
-			for (Individual i : population) 
+		private Board childrenOf(Board b1, Board b2) {
+			return null; //TODO 
+		}
+
+		/*public void attemptMutation() {
+			for (Board b : population) 
 				if (Math.random() <= MUTATION_ODD) 
 					i.getArrayOfElements()[getRandom(Individual.SIZE)] = getRandom(Individual.SIZE);
 		}
@@ -102,6 +102,6 @@ public class GeneticAlgorithm {
 			NaturalSelection queens = new NaturalSelection();
 //			Individual i = new Individual(a);
 //			System.out.println(i.calculateFitness());
-		}
+		}*/
 	}
-}
+
