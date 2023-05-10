@@ -1,5 +1,6 @@
 package controllers;
 
+import space.Board;
 import space.Commons;
 import space.SpaceInvaders;
 
@@ -18,8 +19,9 @@ public class Controller implements GameController {
 
 	@Override
 	public double[] nextMove(double[] currentState) {
-//		return nn.forward(currentState);
-		return null;
+		//return nn.forward(currentState);	
+		double[] x = {1,2,3,4,5.4,3.2};
+		return x;
 	}
 
 	public NeuralNetwork getNeuralNetwork() {
@@ -72,6 +74,16 @@ public class Controller implements GameController {
 	}
 		
 		private double[] forward() {
+		
 			*/
+		
+		public Double getFitness() {
+			Board b = new Board(new Controller(this));
+			return b.getFitness();
+		}
+
+		public double[] getArray() {
+			return array;
+		}
 	}
 }

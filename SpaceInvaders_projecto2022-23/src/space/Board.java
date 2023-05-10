@@ -194,6 +194,7 @@ public class Board extends JPanel {
 		g.drawString(message + "-->" + getFitness(), (Commons.BOARD_WIDTH - fontMetrics.stringWidth(message)) / 2,
 				Commons.BOARD_WIDTH / 2);
 	}
+	
 
 	public BufferedImage createImage(JPanel panel) {
 
@@ -426,7 +427,7 @@ public class Board extends JPanel {
 
 	public Double getFitness() {
 		double fitness = (double) (getDeaths() * 10000 + getTime());
-		// System.out.println(fitness);
+//		 System.out.println(fitness + "here");
 		return fitness;
 	}
 
