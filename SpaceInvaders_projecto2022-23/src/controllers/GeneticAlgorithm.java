@@ -12,13 +12,15 @@ public class GeneticAlgorithm {
 	private List<NeuralNetwork> population = new ArrayList<>();
 
 	private static final int POPULATION_SIZE = 100;
-	private static final int MAX_GENERATIONS = 1000;
+	private static final int MAX_GENERATIONS = 200;
 	private static final double MUTATION_ODD = 0.2;
 	private static final double SELECTION_RATIO = 0.05;
 	private static final int NUM_OF_CHANGES = 4;
 
+	private long seed;
+	
 	public GeneticAlgorithm() {
-
+	
 		// Initialization
 		population = generate();
 
@@ -30,10 +32,11 @@ public class GeneticAlgorithm {
 
 			// Cross Over
 			newGeneration();
-			
+
 			// Mutation
-			attemptMutation();
 			System.out.println("here");
+			attemptMutation();
+
 			// Generation improvement
 			numOfGens++;
 		}
@@ -44,6 +47,7 @@ public class GeneticAlgorithm {
 		List<NeuralNetwork> population = new ArrayList<>();
 		for (int i = 0; i < POPULATION_SIZE; i++) {
 			population.add(new Controller(new NeuralNetwork()).getNeuralNetwork());
+			System.out.println(population.get(i).getFitness(seed));
 		}
 		return population;
 	}
@@ -61,7 +65,7 @@ public class GeneticAlgorithm {
 	}
 
 	public NeuralNetwork lowerFitness(NeuralNetwork nn1, NeuralNetwork nn2) {
-		return (nn1.getFitness() < nn2.getFitness()) ? nn1 : nn2;
+		return (nn1.getFitness(seed) < nn2.getFitness(seed)) ? nn1 : nn2;
 	}
 
 	public void newGeneration() {
@@ -84,20 +88,24 @@ public class GeneticAlgorithm {
 
 	public void attemptMutation() {
 		int x = 0;
-		for (NeuralNetwork nn : population) 
-			if (Math.random() <= MUTATION_ODD) 
-				while (x < NUM_OF_CHANGES)
+		for (NeuralNetwork nn : population)
+			if (Math.random() <= MUTATION_ODD)
+				while (x++ < NUM_OF_CHANGES)
 					nn.getArray()[getRandom(nn.getArray().length)] = ThreadLocalRandom.current().nextDouble(0, 100000);
 	}
 
 	public double fittestChromossome() {
-		NeuralNetwork temp = null;
+		NeuralNetwork temp = new NeuralNetwork();
 		for (int i = 0; i < population.size(); i++)
-			temp = (population.get(i).getFitness() > temp.getFitness()) ? population.get(i) : temp;
-		return temp.getFitness();
+			temp = (population.get(i).getFitness(seed) > temp.getFitness(seed)) ? population.get(i) : temp;
+		return temp.getFitness(seed);
 	}
 
 	public List<NeuralNetwork> getPopulation() {
 		return population;
+	}
+
+	public long getSeed() {
+		return seed;
 	}
 }
