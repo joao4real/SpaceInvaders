@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import controllers.Controller.NeuralNetwork;
+import space.SpaceInvaders;
 
 public class GeneticAlgorithm {
 
@@ -14,13 +15,14 @@ public class GeneticAlgorithm {
 	private static final int POPULATION_SIZE = 100;
 	private static final int MAX_GENERATIONS = 200;
 	private static final double MUTATION_ODD = 0.2;
-	private static final double SELECTION_RATIO = 0.05;
+	private static final double SELECTION_RATIO = 0.2;
 	private static final int NUM_OF_CHANGES = 4;
 
 	private long seed;
 	
 	public GeneticAlgorithm() {
 	
+		
 		// Initialization
 		population = generate();
 
@@ -29,25 +31,24 @@ public class GeneticAlgorithm {
 
 			// Selection
 			selection();
-
+			System.out.println("selection");
 			// Cross Over
 			newGeneration();
-
+			System.out.println("crossover");
 			// Mutation
-			System.out.println("here");
 			attemptMutation();
-
+			System.out.println("mutation");
 			// Generation improvement
 			numOfGens++;
 		}
-		System.out.println(fittestChromossome());
+		SpaceInvaders.showControllerPlaying(new Controller(population.get(0)),seed);
 	}
 
 	public List<NeuralNetwork> generate() {
 		List<NeuralNetwork> population = new ArrayList<>();
+		seed = new Random().nextLong();
 		for (int i = 0; i < POPULATION_SIZE; i++) {
 			population.add(new Controller(new NeuralNetwork()).getNeuralNetwork());
-			System.out.println(population.get(i).getFitness(seed));
 		}
 		return population;
 	}
@@ -57,15 +58,11 @@ public class GeneticAlgorithm {
 	}
 
 	public void selection() {
-		while (population.size() > SELECTION_RATIO * POPULATION_SIZE) {
-			int a = getRandom(population.size());
-			int b = getRandom(population.size());
-			population.remove(lowerFitness(population.get(a), population.get(b)));
-		}
-	}
-
-	public NeuralNetwork lowerFitness(NeuralNetwork nn1, NeuralNetwork nn2) {
-		return (nn1.getFitness(seed) < nn2.getFitness(seed)) ? nn1 : nn2;
+		sort();
+		List<NeuralNetwork> nn1= new ArrayList<>();
+		for(int i = 0; i < POPULATION_SIZE * SELECTION_RATIO; i++)
+			nn1.add(population.get(i));
+		population = nn1;
 	}
 
 	public void newGeneration() {
@@ -91,14 +88,11 @@ public class GeneticAlgorithm {
 		for (NeuralNetwork nn : population)
 			if (Math.random() <= MUTATION_ODD)
 				while (x++ < NUM_OF_CHANGES)
-					nn.getArray()[getRandom(nn.getArray().length)] = ThreadLocalRandom.current().nextDouble(0, 100000);
+					nn.getArray()[getRandom(nn.getArray().length)] = ThreadLocalRandom.current().nextDouble(-1,1);
 	}
 
-	public double fittestChromossome() {
-		NeuralNetwork temp = new NeuralNetwork();
-		for (int i = 0; i < population.size(); i++)
-			temp = (population.get(i).getFitness(seed) > temp.getFitness(seed)) ? population.get(i) : temp;
-		return temp.getFitness(seed);
+	public void sort() {
+		population.sort((nn1,nn2) -> (int)(nn2.getFitness(seed) - nn1.getFitness(seed)));
 	}
 
 	public List<NeuralNetwork> getPopulation() {

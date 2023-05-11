@@ -20,10 +20,9 @@ public class Controller implements GameController {
 		return nn;
 	}
 
-	protected static class NeuralNetwork {
+	protected static class NeuralNetwork{
 
 		private static final int HIDDEN_LAYER_SIZE = 100;
-
 		private double[] array;
 
 		protected NeuralNetwork() {
@@ -38,7 +37,7 @@ public class Controller implements GameController {
 
 		private void generateArray(double[] array) {
 			for (int i = 0; i < array.length; i++)
-				array[i] = Math.random() * 100000; // valores entre 0 e 100000
+				array[i] = Math.random() * 2 - 1; // valores entre -1 e 1
 		}
 
 		private double[] forward(double[] currentState) {
@@ -87,7 +86,6 @@ public class Controller implements GameController {
 		  } 
 	  return result; 	  
 	}
-
 
 	public double[] getArray() {
 		return array;
