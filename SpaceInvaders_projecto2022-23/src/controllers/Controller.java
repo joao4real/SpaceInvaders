@@ -20,11 +20,12 @@ public class Controller implements GameController {
 		return nn;
 	}
 
-	protected static class NeuralNetwork{
+	protected static class NeuralNetwork implements Comparable<NeuralNetwork>{
 
 		private static final int HIDDEN_LAYER_SIZE = 100;
 		private double[] array;
-
+		private double fitness;
+		
 		protected NeuralNetwork() {
 			createNewNeuralNetwork();
 		}
@@ -40,61 +41,44 @@ public class Controller implements GameController {
 				array[i] = Math.random() * 2 - 1; // valores entre -1 e 1
 		}
 
-		private double[] forward(double[] currentState) {
-
-		double[][] inputWeights = new double[Commons.STATE_SIZE][HIDDEN_LAYER_SIZE];
-		double[] hiddenBiases = new double[HIDDEN_LAYER_SIZE];
-		double[][] outputWeights = new double[HIDDEN_LAYER_SIZE][Commons.NUM_ACTIONS];
-		double[] outputBiases = new double[Commons.NUM_ACTIONS];
-		int x = 0;	
-
-		for(int i = 0;i<array.length;i++) {
-			
-			if( i < Commons.STATE_SIZE * HIDDEN_LAYER_SIZE) {
-				x = i/HIDDEN_LAYER_SIZE;
-				if(i % HIDDEN_LAYER_SIZE == 0)
-					inputWeights[x][0] = array[i]; //change to a new line
-				else
-					inputWeights[x][i - (x * HIDDEN_LAYER_SIZE)] = array[i];
-			}
-			if(i >= Commons.STATE_SIZE * HIDDEN_LAYER_SIZE && i < Commons.STATE_SIZE * HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE) 
-				hiddenBiases[i - Commons.STATE_SIZE * HIDDEN_LAYER_SIZE] = array[i]; 
-			if( i >= Commons.STATE_SIZE * HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE && i < Commons.STATE_SIZE * HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE
-					+ HIDDEN_LAYER_SIZE * Commons.NUM_ACTIONS) {
-				int offset = i - (Commons.STATE_SIZE * HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE);
-				x = (offset) / Commons.NUM_ACTIONS;
-				if(offset % Commons.NUM_ACTIONS == 0)
-					outputWeights[x][0] = array[i];
-				else
-					outputWeights[x][offset - (x * Commons.NUM_ACTIONS)] = array[i];
-			}
-			if( i >= Commons.STATE_SIZE * HIDDEN_LAYER_SIZE + HIDDEN_LAYER_SIZE
-					+ HIDDEN_LAYER_SIZE * Commons.NUM_ACTIONS && i < array.length)
-				outputBiases[i - (array.length - Commons.NUM_ACTIONS)] = array[i];
+		public double[] forward(double[] input) {
+			int offset = 0;
+			double[] hidden = new double[HIDDEN_LAYER_SIZE];
+			double[] output = new double[Commons.NUM_ACTIONS];
+			for (int i = 0; i < Commons.STATE_SIZE; i++)
+				for (int j = 0; j < HIDDEN_LAYER_SIZE; j++)
+					hidden[j] += input[i] * array[i * HIDDEN_LAYER_SIZE + j];
+			offset += Commons.STATE_SIZE * HIDDEN_LAYER_SIZE;
+			for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
+				hidden[i] = 1 / (1 + Math.exp(-hidden[i] - array[i + offset]));
+			offset += HIDDEN_LAYER_SIZE;
+			for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
+				for (int j = 0; j < Commons.NUM_ACTIONS; j++)
+					output[j] += hidden[i] * array[i * Commons.NUM_ACTIONS + j];
+			offset += HIDDEN_LAYER_SIZE * Commons.NUM_ACTIONS;
+			for (int i = 0; i < Commons.NUM_ACTIONS; i++)
+				output[i] = 1 / (1 + Math.exp(-output[i] - array[i + offset]));
+			return output;
 		}
-		return calculate(calculate(currentState, inputWeights, hiddenBiases), outputWeights, outputBiases);	
-	}
 
-	public double[] calculate(double[] input ,double[][] weights, double[] biases) {
-	  double[] result = new double[biases.length];
-	  
-	  for (int j = 0; j < weights[0].length; j++) { 
-		  double total = 0; 
-		  for (int i = 0; i < weights.length; i++) 
-			  total += weights[i][j] * input[i];
-		  result[j] = 1/(1 + Math.exp(-(total + biases[j])));
-		  } 
-	  return result; 	  
-	}
+		public void fitness(long seed) {
+			Board b = new Board(new Controller(this));
+			b.setSeed(seed);
+			b.run();
+			fitness = b.getFitness();
+		}
 
-	public double[] getArray() {
-		return array;
-	}
+		public double[] getArray() {
+			return array;
+		}
+		
+		public double getFitness() {
+			return fitness;
+		}
 
-	public double getFitness(long seed) {
-		Board b = new Board(new Controller(this));
-		b.setSeed(seed);
-		b.run();
-		return b.getFitness();
+		@Override
+		public int compareTo(NeuralNetwork nn) {
+			return (int)(this.fitness - nn.fitness);
+		}
 	}
-}}
+}
