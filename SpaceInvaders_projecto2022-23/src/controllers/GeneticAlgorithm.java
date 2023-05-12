@@ -89,7 +89,7 @@ public class GeneticAlgorithm {
 		int pointer = getRandom(nn1.getArray().length);
 		for (int i = 0; i < nn1.getArray().length; i++) 
 			nn.getArray()[i] = (i < pointer) ? nn1.getArray()[i] : nn2.getArray()[i];
-		//nn.fitness(seed);
+		//*nn.fitness(seed);
 		return nn;
 	}
 
