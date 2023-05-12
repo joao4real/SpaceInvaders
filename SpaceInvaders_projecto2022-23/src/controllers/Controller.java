@@ -42,26 +42,31 @@ public class Controller implements GameController {
 		}
 
 		public double[] forward(double[] input) {
-			int offset = 0;
-			double[] hidden = new double[HIDDEN_LAYER_SIZE];
-			double[] output = new double[Commons.NUM_ACTIONS];
-			for (int i = 0; i < Commons.STATE_SIZE; i++)
-				for (int j = 0; j < HIDDEN_LAYER_SIZE; j++)
-					hidden[j] += input[i] * array[i * HIDDEN_LAYER_SIZE + j];
-			offset += Commons.STATE_SIZE * HIDDEN_LAYER_SIZE;
-			for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
-				hidden[i] = 1 / (1 + Math.exp(-hidden[i] - array[i + offset]));
-			offset += HIDDEN_LAYER_SIZE;
-			for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
-				for (int j = 0; j < Commons.NUM_ACTIONS; j++)
-					output[j] += hidden[i] * array[i * Commons.NUM_ACTIONS + j];
-			offset += HIDDEN_LAYER_SIZE * Commons.NUM_ACTIONS;
-			for (int i = 0; i < Commons.NUM_ACTIONS; i++)
-				output[i] = 1 / (1 + Math.exp(-output[i] - array[i + offset]));
-			return output;
-		}
 
-		public void fitness(long seed) {
+            int offset = 0;
+            double[] hidden = new double[HIDDEN_LAYER_SIZE];
+            double[] output = new double[Commons.NUM_ACTIONS];
+
+            //Input Weights
+            for (int i = 0; i < Commons.STATE_SIZE; i++)
+                for (int j = 0; j < HIDDEN_LAYER_SIZE; j++)
+                    hidden[j] += input[i] * array[i * HIDDEN_LAYER_SIZE + j];
+
+
+            offset += Commons.STATE_SIZE * HIDDEN_LAYER_SIZE;
+            for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
+                hidden[i] = 1 / (1 + Math.exp(-hidden[i] - array[i + offset]));
+            offset += HIDDEN_LAYER_SIZE;
+            for (int i = 0; i < HIDDEN_LAYER_SIZE; i++)
+                for (int j = 0; j < Commons.NUM_ACTIONS; j++)
+                    output[j] += hidden[i] * array[i * Commons.NUM_ACTIONS + j];
+            offset += HIDDEN_LAYER_SIZE * Commons.NUM_ACTIONS;
+            for (int i = 0; i < Commons.NUM_ACTIONS; i++)
+                output[i] = 1 / (1 + Math.exp(-output[i] - array[i + offset]));
+            return output;
+        }
+
+		public void evaluate(long seed) {
 			Board b = new Board(new Controller(this));
 			b.setSeed(seed);
 			b.run();
@@ -78,7 +83,7 @@ public class Controller implements GameController {
 
 		@Override
 		public int compareTo(NeuralNetwork nn) {
-			return (int)(this.fitness - nn.fitness);
+			return (int)(nn.fitness - this.fitness);
 		}
 	}
 }

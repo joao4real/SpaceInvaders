@@ -13,7 +13,7 @@ public class GeneticAlgorithm {
 	private List<NeuralNetwork> population = new ArrayList<>();
 
 	private static final int POPULATION_SIZE = 100;
-	private static final int MAX_GENERATIONS = 20;
+	private static final int MAX_GENERATIONS = 200;
 	private static final double MUTATION_ODD = 0.2;
 	private static final double SELECTION_RATIO = 0.05;
 	private static final int NUM_OF_CHANGES = 4;
@@ -27,7 +27,11 @@ public class GeneticAlgorithm {
 		seed = new Random().nextLong();
 		
 		 //Initialization
-		population = generate();
+		generate();
+		
+		//Evaluate the first generation
+		evaluate();
+
 		System.out.println("Generation: 1");
 		population.forEach(nn -> System.out.println(nn.getFitness()));
 		
@@ -43,30 +47,28 @@ public class GeneticAlgorithm {
 
 			 //Mutation
 			attemptMutation();
+			
+			//Evaluate
+			evaluate();
 
 		}
 		showFittestIndividual();
 	}
-
-	public List<NeuralNetwork> generate() {
-		List<NeuralNetwork> population = new ArrayList<>();
-		for (int i = 0; i < POPULATION_SIZE; i++) {
+	
+	private void generate() {
+		for (int i = 0; i < POPULATION_SIZE; i++) 
 			population.add(new NeuralNetwork());
-			population.get(i).fitness(seed);
-		}
-		return population;
+	}
+	
+	private void evaluate() {
+		population.forEach(nn -> nn.evaluate(seed));
 	}
 
-	public int getRandom(int bound) {
+	private int getRandom(int bound) {
 		return new Random().nextInt(bound);
 	}
 
-	public void selection() {
-		/*while (population.size() > SELECTION_RATIO * POPULATION_SIZE) {
-			int a = getRandom(population.size());
-			int b = getRandom(population.size());
-			population.remove(lowerFitness(population.get(a), population.get(b)));
-		}*/
+	private void selection() {
 		List<NeuralNetwork> list = new ArrayList<>();
 		Collections.sort(population);
 		for(int i = 0; i < SELECTION_RATIO * POPULATION_SIZE; i++) 
@@ -74,9 +76,9 @@ public class GeneticAlgorithm {
 		population = list;
 	}
 
-	public NeuralNetwork lowerFitness(NeuralNetwork nn1, NeuralNetwork nn2) {
+	/*public NeuralNetwork lowerFitness(NeuralNetwork nn1, NeuralNetwork nn2) {
 		return (nn1.getFitness() < nn2.getFitness()) ? nn1 : nn2;
-	}
+	}*/
 
 	public void newGeneration() {
 		while (population.size() < POPULATION_SIZE) 
@@ -89,7 +91,6 @@ public class GeneticAlgorithm {
 		int pointer = getRandom(nn1.getArray().length);
 		for (int i = 0; i < nn1.getArray().length; i++) 
 			nn.getArray()[i] = (i < pointer) ? nn1.getArray()[i] : nn2.getArray()[i];
-		//*nn.fitness(seed);
 		return nn;
 	}
 
