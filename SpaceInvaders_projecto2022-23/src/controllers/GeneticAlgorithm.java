@@ -76,12 +76,12 @@ public class GeneticAlgorithm {
 		population.subList(newSize, population.size()).clear(); 	//Remove
 	}
 
-	public void newGeneration() {
+	private void newGeneration() {
 		while (population.size() < POPULATION_SIZE) 
 			population.add(NeuralNetwork.crossOver(population.get(getRandom(population.size())), population.get(getRandom(population.size()))));
 	}
 	
-	public void attemptMutation() {
+	private void attemptMutation() {
 		population.forEach(nn -> nn.mutation());	
 	}
 
