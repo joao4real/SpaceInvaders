@@ -13,53 +13,53 @@ public class GeneticAlgorithm {
 	private List<NeuralNetwork> population = new ArrayList<>();
 
 	private static final int POPULATION_SIZE = 100;
-	private static final int MAX_GENERATIONS = 200;
-	private static final double MUTATION_ODD = 0.2;
+	private static final int MAX_GENERATIONS = 50;
+	private static final double MUTATION_ODD = 0.8;
 	private static final double SELECTION_RATIO = 0.05;
-	private static final int NUM_OF_CHANGES = 4;
+	private static final int NUM_OF_CHANGES = 1;
 
 
 	private long seed;
-	
+
 	public GeneticAlgorithm() {
-		
+
 		//Initialize seed
 		seed = new Random().nextLong();
-		
-		 //Initialization
+
+		//Initialization
 		generate();
-		
+
 		//Evaluate the first generation
 		evaluate();
 
 		System.out.println("Generation: 1");
 		population.forEach(nn -> System.out.println(nn.getFitness()));
-		
+
 		int numOfGens = 1;
 		while (numOfGens++ < MAX_GENERATIONS) {
 			System.out.println("Generation: " + numOfGens);
 			population.forEach(nn -> System.out.println(nn.getFitness()));
-			 //Selection
+			//Selection
 			selection();
 
-			 //Cross Over
+			//Cross Over
 			newGeneration();
 
-			 //Mutation
+			//Mutation
 			attemptMutation();
-			
+
 			//Evaluate
 			evaluate();
 
 		}
 		showFittestIndividual();
 	}
-	
+
 	private void generate() {
 		for (int i = 0; i < POPULATION_SIZE; i++) 
 			population.add(new NeuralNetwork());
 	}
-	
+
 	private void evaluate() {
 		population.forEach(nn -> nn.evaluate(seed));
 	}
@@ -69,11 +69,12 @@ public class GeneticAlgorithm {
 	}
 
 	private void selection() {
-		List<NeuralNetwork> list = new ArrayList<>();
+		//Mete em ordem crescente
 		Collections.sort(population);
-		for(int i = 0; i < SELECTION_RATIO * POPULATION_SIZE; i++) 
-			list.add(population.get(i));
-		population = list;
+		//Calcula o novo tamanho
+		int newSize = (int) (SELECTION_RATIO * POPULATION_SIZE);
+		//Remove os elementos excedentes da lista
+		population.subList(newSize, population.size()).clear();
 	}
 
 	/*public NeuralNetwork lowerFitness(NeuralNetwork nn1, NeuralNetwork nn2) {
@@ -83,7 +84,7 @@ public class GeneticAlgorithm {
 	public void newGeneration() {
 		while (population.size() < POPULATION_SIZE) 
 			population.add(crossOver(population.get(getRandom(population.size())), population.get(getRandom(population.size()))));
-	
+
 	}
 
 	private NeuralNetwork crossOver(NeuralNetwork nn1, NeuralNetwork nn2) {
@@ -100,8 +101,9 @@ public class GeneticAlgorithm {
 			if (Math.random() <= MUTATION_ODD)
 				while (x++ <= NUM_OF_CHANGES) {
 					nn.getArray()[getRandom(nn.getArray().length)] = ThreadLocalRandom.current().nextDouble(-1,1);
-	}}
-	
+				}
+	}
+
 	private void showFittestIndividual() {
 		NeuralNetwork nn = new NeuralNetwork();
 		for(NeuralNetwork n : population)
